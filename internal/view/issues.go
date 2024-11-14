@@ -1,6 +1,7 @@
 package view
 
 import (
+	"encoding/csv"
 	"fmt"
 	"io"
 	"os"
@@ -16,6 +17,7 @@ import (
 // DisplayFormat is a issue display type.
 type DisplayFormat struct {
 	Plain        bool
+	CSV          bool
 	NoHeaders    bool
 	NoTruncate   bool
 	Columns      []string
@@ -37,6 +39,11 @@ type IssueList struct {
 
 // Render renders the view.
 func (l *IssueList) Render() error {
+	if l.Display.CSV {
+		w := csv.NewWriter(os.Stdout)
+		return l.renderCSV(*w)
+	}
+
 	if l.Display.Plain || tui.IsDumbTerminal() || tui.IsNotTTY() {
 		w := tabwriter.NewWriter(os.Stdout, 0, tabWidth, 1, '\t', 0)
 		return l.renderPlain(w)
@@ -125,6 +132,11 @@ func (l *IssueList) Render() error {
 // renderPlain renders the issue in plain view.
 func (l *IssueList) renderPlain(w io.Writer) error {
 	return renderPlain(w, l.data())
+}
+
+// renderPlain renders the issue in plain view.
+func (l *IssueList) renderCSV(w csv.Writer) error {
+	return renderCSV(w, l.data())
 }
 
 func (*IssueList) validColumnsMap() map[string]struct{} {

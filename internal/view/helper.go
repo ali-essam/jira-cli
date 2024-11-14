@@ -1,6 +1,7 @@
 package view
 
 import (
+	"encoding/csv"
 	"fmt"
 	"io"
 	"os"
@@ -23,12 +24,12 @@ const (
 	tabWidth = 8
 	helpText = `USAGE
 	-----
-	
-	The layout contains 2 sections, viz: Sidebar and Contents screen.  
-	
+
+	The layout contains 2 sections, viz: Sidebar and Contents screen.
+
 	You can use up and down arrow keys or 'j' and 'k' letters to navigate through the sidebar.
 	Press 'w' or Tab to toggle focus between the sidebar and the contents screen.
-	
+
 	On contents screen:
 	  - Use arrow keys or 'j', 'k', 'h', and 'l' letters to navigate through the issue list.
 	  - Use 'g' and 'SHIFT+G' to quickly navigate to the top and bottom respectively.
@@ -36,7 +37,7 @@ const (
 	  - Press 'c' to copy issue URL to the system clipboard.
 	  - Press 'CTRL+K' to copy issue key to the system clipboard.
 	  - Hit ENTER to open the selected issue in a browser.
-	
+
 	Press 'q' / ESC / CTRL+C to quit.`
 
 	tableHelpText = `[default]ACTIONS AVAILABLE IN THE TUI
@@ -173,6 +174,12 @@ func renderPlain(w io.Writer, data tui.TableData) error {
 	if _, ok := w.(*tabwriter.Writer); ok {
 		return w.(*tabwriter.Writer).Flush()
 	}
+	return nil
+}
+
+func renderCSV(w csv.Writer, data tui.TableData) error {
+	w.WriteAll(data)
+	w.Flush()
 	return nil
 }
 

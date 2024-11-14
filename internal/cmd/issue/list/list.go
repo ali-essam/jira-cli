@@ -18,7 +18,7 @@ const (
 	helpText = `List lists issues in a given project.
 
 You can combine different flags to create a unique query. For instance,
-	
+
 # Issues that are of high priority, is in progress, was created this month, and has given labels
 jira issue list -yHigh -s"In Progress" --created month -lbackend -l"high prio"
 
@@ -110,6 +110,9 @@ func loadList(cmd *cobra.Command) {
 	plain, err := cmd.Flags().GetBool("plain")
 	cmdutil.ExitIfError(err)
 
+	csv, err := cmd.Flags().GetBool("csv")
+	cmdutil.ExitIfError(err)
+
 	noHeaders, err := cmd.Flags().GetBool("no-headers")
 	cmdutil.ExitIfError(err)
 
@@ -131,6 +134,7 @@ func loadList(cmd *cobra.Command) {
 			loadList(cmd)
 		},
 		Display: view.DisplayFormat{
+			CSV:          csv,
 			Plain:        plain,
 			NoHeaders:    noHeaders,
 			NoTruncate:   noTruncate,
@@ -181,6 +185,7 @@ func SetFlags(cmd *cobra.Command) {
 	cmd.Flags().Bool("reverse", false, "Reverse the display order (default \"DESC\")")
 	cmd.Flags().String("paginate", "0:100", "Paginate the result. Max 100 at a time, format: <from>:<limit> where <from> is optional")
 	cmd.Flags().Bool("plain", false, "Display output in plain mode")
+	cmd.Flags().Bool("csv", false, "Display output in csv mode")
 	cmd.Flags().Bool("no-headers", false, "Don't display table headers in plain mode. Works only with --plain")
 	cmd.Flags().Bool("no-truncate", false, "Show all available columns in plain mode. Works only with --plain")
 
